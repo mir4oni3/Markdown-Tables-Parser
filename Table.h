@@ -10,16 +10,16 @@ class Table {
 public:
 	Table();
 	Table(const Row& header);
-	Table(const std::ifstream& file);
+	//Table(const std::ifstream& file);    !!!!!!!!!!
 
 	void addRow(const Row& row);
 
 	const Row& getRowAtIndex(const int index) const;
-	const Row& getHeaderColumn() const;
+	const Row& getHeaderRow() const;
 
-	void setRowAtIndex(const Row& row, const int index);
-	void setHeaderColumn(const Row& header);
-	void setHeaderFieldAtIndex(const Field& newField, const int index);
+	void setRowAtIndex(const int index, const Row& row);
+	void setHeaderRow(const Row& header);
+	void setHeaderFieldAtIndex(const int index, const Field& newField);
 	void changeField(const int rowIndex, const char* columnName, const char* newName); //rowIndex begins at 1
 	void changeField(const char* columnName, const char* oldName, const char* newName); //changes only first instance
 
