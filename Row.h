@@ -3,16 +3,20 @@
 
 class Row {
 	Field fields[MAX_COLUMN_COUNT];
-	unsigned currentFieldCount = 0;
-	bool isHeader = false;
+	int currentFieldCount = 0;
+	bool isSeparator = false;
 
 public:
-	Row(const Field fields[MAX_COLUMN_COUNT],const bool isHeader = false);
-	Row();
+	Row(const Field fields[MAX_COLUMN_COUNT], const bool isSeparator = false);
+	Row(const bool isSeparator = false);
 
 	const Row& getRow() const;
 	const char* getFieldAtIndex(const int index) const;
+	int getFieldCount() const;
 
 	void setRow(const Row& row);
-	void setElementAtIndex(const char* newValue, const int index);
+	void setFieldAtIndex(const char* newValue, const int index);
+	void setFieldCount(const int fieldCount);
+
+	void printRow() const;
 };
