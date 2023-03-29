@@ -4,6 +4,7 @@
 #include <cstring>
 #include <cmath>
 #include <fstream>
+#include <sstream>
 
 Table::Table() {
 	Row header;
@@ -70,7 +71,22 @@ void Table::setHeaderRow(const Row& header) {
 	}
 }
 
+void Table::changeHeaderField(const char* oldColumnName, const char* newColumnName) {
+	if (oldColumnName == nullptr || newColumnName == nullptr || oldColumnName[0] == '\0' || newColumnName[0] == '\0') {
+		return;
+	}
+	for (int i = 0; i < this->header.getFieldCount(); i++) {
+		if (strcmp(this->header.getFieldAtIndex(i), oldColumnName) == 0) {
+			this->header.setFieldAtIndex(newColumnName, i);
+			break;
+		}
+	}
+}
+
 void Table::changeField(int rowIndex, const char* columnName, const char* newName) { //rowIndex begins at 1
+	if (columnName == nullptr || newName == nullptr || columnName[0] == '\0' || newName[0] == '\0') {
+		return;
+	}
 	rowIndex++;
 	if (rowIndex < 2 || rowIndex >= this->currentRowCount) {
 		return;
@@ -92,6 +108,10 @@ void Table::changeField(int rowIndex, const char* columnName, const char* newNam
 }
 
 void Table::changeField(const char* columnName, const char* oldName, const char* newName) { //changes only first instance
+	if (columnName == nullptr || oldName == nullptr || newName == nullptr || 
+		columnName[0] == '\0' || oldName[0] == '\0' || newName[0] == '\0') {
+		return;
+	}
 	int columnIndex = -1;
 	for (int i = 0; i < header.getFieldCount(); i++) {
 		if (strcmp(header.getFieldAtIndex(i), columnName) == 0) {
@@ -149,75 +169,59 @@ void fillOrientationsArray(orientation* orientations, const Row& separator) {
 	}
 }
 
-void addSpacesToSeparator(int colWidth, Row& separator) {
-	for (int i = 0; i < separator.getFieldCount(); i++) {
-		char curCell[FIELD_MAX_SYMBOLS];
-		strcpy_s(curCell, FIELD_MAX_SYMBOLS, separator.getFieldAtIndex(i));
-		bool startsWithColon = false, endsWithColon = false;
-		startsWithColon = startsWith(curCell, ':'); endsWithColon = endsWith(curCell, ':');
-		curCell[0] = ' ';
-		curCell[1] = (startsWithColon) ? ':' : '-';
-		for (int i = 2; i < colWidth - 2; i++) {
-			curCell[i] = '-';
-		}
-		curCell[colWidth - 2] = (endsWithColon) ? ':' : '-';
-		curCell[colWidth - 1] = ' ';
-		curCell[colWidth] = '\0';
-	}
-}
-
-void Table::addSpaces(int colWidth) {
-	orientation* orientations = new orientation[this->header.getFieldCount()];
-	fillOrientationsArray(orientations, this->rows[1]);
-	addSpacesToSeparator(colWidth, this->rows[1]);
-
-	for (int i = 0; i < this->currentRowCount; i++) {
-		if (i == 1) {
-			continue;
-		}
-		for (int j = 0; j < this->header.getFieldCount(); j++) {
-			char* newCell = new char[colWidth + 1] {""};
-			int freespaces = colWidth - strlen(this->rows[i].getFieldAtIndex(j));
-			int freespacesL = 1, freespacesR = 1;
-			freespaces -= 2;
-			switch (orientations[j]) {
-				case orientation::left: freespacesR += freespaces; break;
-				case orientation::center: freespacesL += floor((double)freespaces / 2); freespacesR += ceil((double)freespaces / 2); break;
-				case orientation::right: freespacesL += freespaces; break;
-			}
-			append(newCell, ' ', freespacesL);
-			append(newCell, this->rows[i].getFieldAtIndex(j));
-			append(newCell, ' ', freespacesR);
-			this->rows[i].setFieldAtIndex(newCell, j);
-			delete[] newCell;
-		}
-	}
-
-	delete[] orientations;
-}
-
 void Table::print() {
 	int colCount = this->header.getFieldCount();
 	if (colCount == 0) {
 		std::cout << "Empty table" << std::endl;
 		return;
 	}
-	int colWidth = getLongestFieldLength() + 2;
-	addSpaces(colWidth);
+	int colWidth = getLongestFieldLength();
+
+	orientation* orientations = new orientation[this->header.getFieldCount()];
+	fillOrientationsArray(orientations, this->rows[1]);
 
 	for (int i = 0; i < this->currentRowCount; i++) {
-		this->rows[i].printRow();
+		for (int j = 0; j < this->header.getFieldCount(); j++) {
+			std::cout << "|";
+			const char* currentField = this->rows[i].getFieldAtIndex(j);
+			int remainingSpaces = colWidth - strlen(currentField);
+			if (orientations[j] == orientation::left) {
+				std::cout << currentField;
+				for (int i = 0; i < remainingSpaces; i++) {
+					std::cout << " ";
+				}
+			}
+			if (orientations[j] == orientation::right) {
+				for (int i = 0; i < remainingSpaces; i++) {
+					std::cout << " ";
+				}
+				std::cout << currentField;
+			}
+			if (orientations[j] == orientation::center) {
+				for (int i = 0; i <remainingSpaces / 2; i++) {
+					std::cout << " ";
+				}
+				std::cout << currentField;
+				int rightSpaces = (remainingSpaces % 2 == 0) ? remainingSpaces / 2 : (remainingSpaces / 2 + 1);
+				for (int i = 0; i < rightSpaces; i++) {
+					std::cout << " ";
+				}
+			}
+		}
+		std::cout << "|";
 	}
 }
 
 void Table::printCondition(const char* columnName, const char* value) {
+	if (columnName == nullptr || value == nullptr || columnName[0] == '\0' || value[0] == '\0') {
+		return;
+	}
 	int colCount = this->header.getFieldCount();
 	if (colCount == 0) {
 		std::cout << "Empty table" << std::endl;
 		return;
 	}
-	int colWidth = getLongestFieldLength() + 2;
-	addSpaces(colWidth);
+	int colWidth = getLongestFieldLength();
 
 	int columnIndex = -1;
 	for (int i = 0; i < this->header.getFieldCount(); i++) {
@@ -236,12 +240,44 @@ void Table::printCondition(const char* columnName, const char* value) {
 		if (strcmp(this->rows[i].getFieldAtIndex(columnIndex), value) != 0) {
 			continue;
 		}
-		this->rows[i].printRow();
+		orientation* orientations = new orientation[this->header.getFieldCount()];
+		fillOrientationsArray(orientations, this->rows[1]);
+		for (int j = 0; j < this->header.getFieldCount(); j++) {
+			std::cout << "|";
+			const char* currentField = this->rows[i].getFieldAtIndex(j);
+			int remainingSpaces = colWidth - strlen(currentField);
+			if (orientations[j] == orientation::left) {
+				std::cout << currentField;
+				for (int i = 0; i < remainingSpaces; i++) {
+					std::cout << " ";
+				}
+			}
+			if (orientations[j] == orientation::right) {
+				for (int i = 0; i < remainingSpaces; i++) {
+					std::cout << " ";
+				}
+				std::cout << currentField;
+			}
+			if (orientations[j] == orientation::center) {
+				for (int i = 0; i < remainingSpaces / 2; i++) {
+					std::cout << " ";
+				}
+				std::cout << currentField;
+				int rightSpaces = (remainingSpaces % 2 == 0) ? remainingSpaces / 2 : (remainingSpaces / 2 + 1);
+				for (int i = 0; i < rightSpaces; i++) {
+					std::cout << " ";
+				}
+			}
+		}
+		std::cout << "|";
 	}
 }
 
-void Table::saveToFile() const { 
-	std::ofstream file(FILE_NAME); // default file name (inside Constants.h)
+void Table::saveToFile(const char* fileName) const { 
+	if (fileName == nullptr || fileName[0] == '\0') {
+		return;
+	}
+	std::ofstream file(fileName);
 	if (!file.is_open()) {
 		return;
 	}
@@ -252,5 +288,44 @@ void Table::saveToFile() const {
 		}
 		file << std::endl;
 	}
+	file.close();
+}
+
+void Table::readFromFile(const char* fileName) {
+	if (fileName == nullptr || fileName[0] == '\0') {
+		return;
+	}
+	std::ifstream file(fileName);
+	if (!file.is_open()) {
+		return;
+	}
+
+	int ColumnCount = 0;
+	char line[MAX_COLUMN_COUNT * (FIELD_MAX_SYMBOLS + 2)];
+	int row = 0, col = 0;
+	while (true) {
+		file.getline(line, sizeof(line));
+		if (line[0] == '\0') {
+			break;
+		}
+		std::stringstream ss(line);
+		ss.ignore();
+		char current[FIELD_MAX_SYMBOLS * 2];
+		while (true) {
+			ss.getline(current, FIELD_MAX_SYMBOLS * 2, '|');
+			trim(current);
+			if (ss.eof()) {
+				break;
+			}
+			this->rows[row].setFieldAtIndex(current, col);
+			col++;
+		}
+		row++;
+	}
+
+	this->header.setRow(this->rows[0]);
+	this->headerSeparator.setRow(this->rows[1]);
+	this->currentRowCount = row;
+
 	file.close();
 }

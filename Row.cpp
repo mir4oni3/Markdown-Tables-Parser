@@ -65,6 +65,14 @@ void Row::setFieldCount(const int fieldCount) {
 	this->currentFieldCount = fieldCount;
 }
 
+void Row::addField(const char* field) {
+	if (field == nullptr || field[0] == '\0' || currentFieldCount == MAX_COLUMN_COUNT) {
+		return;
+	}
+	this->fields[currentFieldCount].setField(field);
+	currentFieldCount++;
+}
+
 void Row::printRow() const {
 	std::cout << "|";
 	for (int i = 0; i < this->currentFieldCount; i++) {

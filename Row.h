@@ -18,5 +18,7 @@ public:
 	void setFieldAtIndex(const char* newValue, const int index);
 	void setFieldCount(const int fieldCount);
 
+	void addField(const char* field);
+
 	void printRow() const;
 };
