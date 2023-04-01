@@ -3,6 +3,10 @@
 #include <sstream>
 #include "Constants.h"
 
+TableTool::TableTool(const Table& table) {
+	this->table.setTable(table);
+}
+
 void TableTool::printLegend() const{
 	std::cout << "commands:" << std::endl;
 	std::cout << "load <fileName> - loads contents from <fileName> into table" << std::endl;
@@ -43,8 +47,8 @@ void TableTool::begin() {
 		}
 
 		if (strcmp(command, "change") == 0) {
-			char oldColumnName[FIELD_MAX_SYMBOLS];
-			char newColumnName[FIELD_MAX_SYMBOLS];
+			char oldColumnName[constants::FIELD_MAX_SYMBOLS];
+			char newColumnName[constants::FIELD_MAX_SYMBOLS];
 
 			ss >> oldColumnName;
 			ss >> newColumnName;
@@ -55,11 +59,12 @@ void TableTool::begin() {
 
 		if (strcmp(command, "addrow") == 0) {
 			Row row;
-			char field[FIELD_MAX_SYMBOLS];
+			char field[constants::FIELD_MAX_SYMBOLS];
 			while (!ss.eof()) {
 				ss >> field;
 				if (field[0] == '\0') { break;  }
 				row.addField(field);
+
 			}
 			this->table.addRow(row);
 			continue;
@@ -67,8 +72,8 @@ void TableTool::begin() {
 
 		if (strcmp(command, "change1") == 0) {
 			int rowNum;
-			char columnName[FIELD_MAX_SYMBOLS];
-			char newCellValue[FIELD_MAX_SYMBOLS];
+			char columnName[constants::FIELD_MAX_SYMBOLS];
+			char newCellValue[constants::FIELD_MAX_SYMBOLS];
 
 			ss >> rowNum;
 			ss >> columnName;
@@ -79,9 +84,9 @@ void TableTool::begin() {
 		}
 
 		if (strcmp(command, "change2") == 0) {
-			char columnName[FIELD_MAX_SYMBOLS];
-			char oldValue[FIELD_MAX_SYMBOLS];
-			char newValue[FIELD_MAX_SYMBOLS];
+			char columnName[constants::FIELD_MAX_SYMBOLS];
+			char oldValue[constants::FIELD_MAX_SYMBOLS];
+			char newValue[constants::FIELD_MAX_SYMBOLS];
 
 			ss >> columnName;
 			ss >> oldValue;
@@ -92,8 +97,8 @@ void TableTool::begin() {
 		}
 
 		if (strcmp(command, "select") == 0) {
-			char columnName[FIELD_MAX_SYMBOLS];
-			char columnValue[FIELD_MAX_SYMBOLS];
+			char columnName[constants::FIELD_MAX_SYMBOLS];
+			char columnValue[constants::FIELD_MAX_SYMBOLS];
 
 			ss >> columnName;
 			ss >> columnValue;

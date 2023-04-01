@@ -1,12 +1,12 @@
 #include "Row.h"
 #include <cstring>
-#include "Helpers.cpp"
+#include "Helpers.h"
 #include <iostream>
 
-Row::Row(const Field fields[MAX_COLUMN_COUNT], const bool isSeparator = false) {
-	for (int i = 0; i < MAX_COLUMN_COUNT; i++) {
+Row::Row(const Field fields[constants::MAX_COLUMN_COUNT], const bool isSeparator) {
+	for (int i = 0; i < constants::MAX_COLUMN_COUNT; i++) {
 		const char* tempfield = fields[i].getField();
-		if (!isSeparator && strcmp(tempfield, UNINITIALIZED_FIELD) == 0) {
+		if (!isSeparator && strcmp(tempfield, constants::UNINITIALIZED_FIELD) == 0) {
 			this->currentFieldCount = i;
 		}
 		this->fields[i].setField(tempfield);
@@ -14,9 +14,9 @@ Row::Row(const Field fields[MAX_COLUMN_COUNT], const bool isSeparator = false) {
 	this->isSeparator = isSeparator;
 }
 
-Row::Row(const bool isSeparator = false) {
-	const char* value = (isSeparator) ? "-" : UNINITIALIZED_FIELD;
-	for (int i = 0; i < MAX_COLUMN_COUNT; i++) {
+Row::Row(const bool isSeparator) {
+	const char* value = (isSeparator) ? "-" : constants::UNINITIALIZED_FIELD;
+	for (int i = 0; i < constants::MAX_COLUMN_COUNT; i++) {
 		this->fields[i].setField(value);
 	}
 	this->currentFieldCount = 0;
@@ -28,8 +28,8 @@ const Row& Row::getRow() const {
 }
 
 const char* Row::getFieldAtIndex(const int index) const {
-	if (index < 0 || index >= MAX_COLUMN_COUNT) {
-		return UNINITIALIZED_FIELD;
+	if (index < 0 || index >= constants::MAX_COLUMN_COUNT) {
+		return constants::UNINITIALIZED_FIELD;
 	}
 	return this->fields[index].getField();
 }
@@ -39,7 +39,7 @@ int Row::getFieldCount() const {
 }
 
 void Row::setRow(const Row& row) {
-	for (int i = 0; i < MAX_COLUMN_COUNT;i++) {
+	for (int i = 0; i < constants::MAX_COLUMN_COUNT;i++) {
 		this->fields[i].setField(row.getFieldAtIndex(i));
 	}
 	this->currentFieldCount = row.currentFieldCount;
@@ -50,23 +50,23 @@ void Row::setFieldAtIndex(const char* newValue, const int index) {
 	if (index < 0 || index >= currentFieldCount) {
 		return;
 	}
-	if (strlen(newValue) + 1 > FIELD_MAX_SYMBOLS) {
+	if (strlen(newValue) + 1 > constants::FIELD_MAX_SYMBOLS) {
 		return;
 	}
-	if (!contains(newValue, FIELD_MAX_SYMBOLS, '|')) {
+	if (!helpers::contains(newValue, constants::FIELD_MAX_SYMBOLS, '|')) {
 		this->fields[index].setField(newValue);
 	}
 }
 
 void Row::setFieldCount(const int fieldCount) {
-	if (fieldCount < 0 || fieldCount >= MAX_COLUMN_COUNT) {
+	if (fieldCount < 0 || fieldCount >= constants::MAX_COLUMN_COUNT) {
 		return;
 	}
 	this->currentFieldCount = fieldCount;
 }
 
 void Row::addField(const char* field) {
-	if (field == nullptr || field[0] == '\0' || currentFieldCount == MAX_COLUMN_COUNT) {
+	if (field == nullptr || field[0] == '\0' || currentFieldCount == constants::MAX_COLUMN_COUNT) {
 		return;
 	}
 	this->fields[currentFieldCount].setField(field);

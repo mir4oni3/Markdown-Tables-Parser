@@ -2,12 +2,12 @@
 #include "Constants.h"
 
 class Field {
-	char value[FIELD_MAX_SYMBOLS];
+	char value[constants::FIELD_MAX_SYMBOLS];
 public:
-	void setField(const char value[FIELD_MAX_SYMBOLS]);
+	void setField(const char value[constants::FIELD_MAX_SYMBOLS]);
 
 	const char* getField() const;
 
 	Field();
-	Field(const char value[FIELD_MAX_SYMBOLS]);
+	Field(const char value[constants::FIELD_MAX_SYMBOLS]);
 };

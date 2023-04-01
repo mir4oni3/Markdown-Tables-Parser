@@ -4,20 +4,17 @@
 #include <fstream>
 
 class Table {
-	Row header;
-	Row headerSeparator;
-	Row rows[MAX_ROW_COUNT];
+	Row rows[constants::MAX_ROW_COUNT];
 	int currentRowCount = 0;
 
 	int getLongestFieldLength() const;
+	void trimFields();
 public:
-	Table();
-	Table(const Row& header);
-
 	void addRow(const Row& row);
 
 	const Row* getRowAtIndex(const int index) const;
 
+	void setTable(const Table& table);
 	void setRowAtIndex(const int index, const Row& row);
 	void setHeaderRow(const Row& header);
 	void changeHeaderField(const char* oldColumnName, const char* newColumnName);

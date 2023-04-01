@@ -2,12 +2,12 @@
 #include "Field.h"
 
 class Row {
-	Field fields[MAX_COLUMN_COUNT];
+	Field fields[constants::MAX_COLUMN_COUNT];
 	int currentFieldCount = 0;
 	bool isSeparator = false;
 
 public:
-	Row(const Field fields[MAX_COLUMN_COUNT], const bool isSeparator = false);
+	Row(const Field fields[constants::MAX_COLUMN_COUNT], const bool isSeparator = false);
 	Row(const bool isSeparator = false);
 
 	const Row& getRow() const;
