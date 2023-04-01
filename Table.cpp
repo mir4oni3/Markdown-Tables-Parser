@@ -1,11 +1,11 @@
-#include "Table.h"
-#include "Helpers.h"
 #include <iostream>
 #include <cstring>
 #include <cmath>
 #include <fstream>
 #include <sstream>
 #pragma warning(disable: 4996)
+#include "Table.h"
+#include "Helpers.h"
 
 void Table::setTable(const Table& table) {
 	this->currentRowCount = table.currentRowCount;
@@ -120,9 +120,6 @@ void Table::changeField(const char* columnName, const char* oldName, const char*
 int Table::getLongestFieldLength() const {
 	int longest = 0;
 	for (int i = 0; i < this->currentRowCount; i++) {
-		if (i == 1) {
-			continue;
-		}
 		for (int j = 0; j < this->rows[0].getFieldCount(); j++) {
 			int curlen = strlen(this->rows[i].getFieldAtIndex(j));
 			if (curlen > longest) {
@@ -143,15 +140,15 @@ enum class orientation {
 void fillOrientationsArray(orientation* orientations, const Row& separator) {
 	for (int i = 0; i < separator.getFieldCount(); i++) {
 		const char* curField = separator.getFieldAtIndex(i);
-		if (!helpers::contains(curField, constants::FIELD_MAX_SYMBOLS, ':')) {
+		if (!contains(curField, constants::FIELD_MAX_SYMBOLS, ':')) {
 			orientations[i] = orientation::left;
 			continue;
 		}
-		if (helpers::startsWith(curField, ':') && helpers::endsWith(curField, ':')) {
+		if (startsWith(curField, ':') && endsWith(curField, ':')) {
 			orientations[i] = orientation::center;
 			continue;
 		}
-		if (helpers::startsWith(curField, ':')) {
+		if (startsWith(curField, ':')) {
 			orientations[i] = orientation::left;
 			continue;
 		}
@@ -164,7 +161,7 @@ void Table::trimFields() {
 		for (int j = 0; j < this->rows[i].getFieldCount(); j++) {
 			char arr[constants::FIELD_MAX_SYMBOLS];
 			strcpy(arr, this->rows[i].getFieldAtIndex(j));
-			this->rows[i].setFieldAtIndex(helpers::trim(arr), j);
+			this->rows[i].setFieldAtIndex(trim(arr), j);
 		}
 	}
 }
@@ -319,11 +316,11 @@ void Table::readFromFile(const char* fileName) {
 		char current[constants::FIELD_MAX_SYMBOLS * 2];
 		while (true) {
 			ss.getline(current, constants::FIELD_MAX_SYMBOLS * 2, '|');
-			helpers::trim(current);
+			trim(current);
 			if (ss.eof()) {
 				break;
 			}
-			this->rows[row].setFieldCount(helpers::countOf(line, '|') - 1);
+			this->rows[row].setFieldCount(countOf(line, '|') - 1);
 			this->rows[row].setFieldAtIndex(current, col);
 			col++;
 		}

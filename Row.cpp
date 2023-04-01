@@ -1,7 +1,7 @@
 #include "Row.h"
 #include <cstring>
-#include "Helpers.h"
 #include <iostream>
+#include "Helpers.h"
 
 Row::Row(const Field fields[constants::MAX_COLUMN_COUNT], const bool isSeparator) {
 	for (int i = 0; i < constants::MAX_COLUMN_COUNT; i++) {
@@ -53,7 +53,7 @@ void Row::setFieldAtIndex(const char* newValue, const int index) {
 	if (strlen(newValue) + 1 > constants::FIELD_MAX_SYMBOLS) {
 		return;
 	}
-	if (!helpers::contains(newValue, constants::FIELD_MAX_SYMBOLS, '|')) {
+	if (!contains(newValue, constants::FIELD_MAX_SYMBOLS, '|')) {
 		this->fields[index].setField(newValue);
 	}
 }

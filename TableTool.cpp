@@ -1,7 +1,7 @@
-#include "TableTool.h"
 #include <iostream>
 #include <sstream>
 #include "Constants.h"
+#include "TableTool.h"
 
 TableTool::TableTool(const Table& table) {
 	this->table.setTable(table);
